@@ -15,7 +15,7 @@ def charger_images(chemin_base, test_size=0.2):
     for chiffre in range(10):  
         dossier_chiffre = os.path.join(chemin_base, str(chiffre))  
         for i in range(101):  
-            chemin_image = os.path.join(dossier_chiffre, f"{i}.tiff")
+            chemin_image = os.path.join(dossier_chiffre, f"{i}.jpg")
             if os.path.exists(chemin_image):
                 with Image.open(chemin_image) as img:
                     tableau_image = np.asarray(img)
@@ -37,8 +37,7 @@ def charger_images(chemin_base, test_size=0.2):
     
     return X_train, X_test, y_train, y_test
 
-#chemin_jeu_donne = "/home/UCA/magilbert10/Dossier/Sujet_Ptut/chiffres/10x10 dataset/"
-chemin_jeu_donne = "/home/UCA/magilbert10/scratch/Sujet_Ptut/dataset/"
+chemin_jeu_donne = "/home/UCA/magilbert10/Dossier/Sujet_Ptut/chiffres/10x10 dataset/"
 
 X_train, X_test, y_train, y_test = charger_images(chemin_jeu_donne, test_size=0.2)
 
@@ -57,7 +56,7 @@ datagen = ImageDataGenerator(
 )
 
 class ArretPrecoceAvecPrecision(tf.keras.callbacks.Callback):
-    def __init__(self, accuracy=0.99):
+    def __init__(self, accuracy=1.0):
         super(ArretPrecoceAvecPrecision, self).__init__()
         self.accuracy = accuracy
 
@@ -82,16 +81,17 @@ modele = keras.Sequential([
     keras.layers.Dense(10, activation='softmax')
 ])
 
-#modele.save_weights("modele_cnn_weights.h5")
-#modele.save("modele_cnn_complet.h5")
+modele.save_weights("modele_cnn_weights.h5")
+modele.save("modele_cnn_complet.h5")
 
 #modele = keras.models.load_model("modele_cnn_complet.h5")
+
 
 modele.compile(optimizer='adam',
               loss='sparse_categorical_crossentropy',
               metrics=['accuracy'])
 
-arret_precoce = ArretPrecoceAvecPrecision(accuracy=0.99)
+arret_precoce = ArretPrecoceAvecPrecision(accuracy=1.0)
 
 historique = modele.fit(datagen.flow(X_train, y_train, batch_size=100),
                     steps_per_epoch=len(X_train) / 100, epochs=2000000000, validation_data=(X_test, y_test),
