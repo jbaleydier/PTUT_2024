@@ -7,8 +7,8 @@ from tensorflow import keras
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 import seaborn as sns
 from sklearn.metrics import confusion_matrix
-
-
+import math
+os.environ['PYTHONIOENCODING'] = 'utf-8' #marche pas, inutile
 def charger_images(base_path, test_size=0.2):
     images = []
     labels = []
@@ -38,7 +38,9 @@ def charger_images(base_path, test_size=0.2):
     
     return X_train, X_test, y_train, y_test
 
-chemin_dataset = "/home/UCA/magilbert10/Dossier/Sujet_Ptut/chiffres/10x10 dataset/"
+chemin_dataset = "chiffres/10x10 dataset/"
+
+# Charger les images
 X_train, X_test, y_train, y_test = charger_images(chemin_dataset, test_size=0.2)
 
 X_train = np.expand_dims(X_train, -1)
@@ -71,11 +73,11 @@ model = keras.Sequential([
 ])
 
 model.compile(optimizer='adam',
-              loss='sparse_categorical_crossentropy',
-              metrics=['accuracy'])
+                loss='sparse_categorical_crossentropy',
+                metrics=['accuracy'])
 
 history = model.fit(datagen.flow(X_train, y_train, batch_size=100),
-                    steps_per_epoch=len(X_train) / 100, epochs=1000, validation_data=(X_test, y_test))
+                    steps_per_epoch=math.ceil(len(X_train) / 100), epochs=400, validation_data=(X_test, y_test))
 
 test_loss, test_acc = model.evaluate(X_test, y_test)
 print('\nPrécision sur l\'ensemble de test:', test_acc * 100, '%')
@@ -95,7 +97,7 @@ for chiffre in range(10):
     total_examples = np.sum(indices)
     precision_chiffre = correct_predictions / total_examples if total_examples > 0 else 0.0
     print(f'Précision pour le chiffre {chiffre}: {precision_chiffre * 100:.2f}%')
-
+#why do you make myself like u put error in the code
 
 loss_history = history.history['loss']
 
@@ -116,3 +118,8 @@ def plot_confusion_matrix(y_true, y_pred, classes):
     plt.show()
 
 plot_confusion_matrix(y_test, predicted_labels, classes=[str(i) for i in range(10)])
+
+# set PYTHONIOENCODING=utf-8
+# python reseau2nerone.py   
+
+#pour executer le code dans le terminal sans bug d'encodage
